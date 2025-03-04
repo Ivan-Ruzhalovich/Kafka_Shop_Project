@@ -18,7 +18,7 @@ public class OrderServiceImpl implements OrderService{
     private final ObjectMapper objectMapper;
 
     @Override
-    public void doThis(Order order) {
+    public void letsDoIt(Order order) {
         try {
             String message = objectMapper.writeValueAsString(OrderModel.createOrderModelFromOrder(order));
             repository.save(order);

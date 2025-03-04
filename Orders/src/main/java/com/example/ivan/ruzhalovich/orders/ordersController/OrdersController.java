@@ -19,7 +19,8 @@ public class OrdersController {
 
     @PostMapping("/new")
     public ResponseEntity<String> createNewOrder(@RequestBody Order order){
-        orderService.doThis(order);
+        orderService.letsDoIt(order);
         return new ResponseEntity<>("Its OK", HttpStatus.OK);
     }
+
 }
