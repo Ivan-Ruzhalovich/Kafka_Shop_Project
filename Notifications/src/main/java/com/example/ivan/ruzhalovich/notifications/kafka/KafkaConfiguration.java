@@ -1,4 +1,4 @@
-package com.example.ivan.ruzhalovich.orders.kafka;
+package com.example.ivan.ruzhalovich.notifications.kafka;
 
 import org.apache.kafka.clients.admin.NewTopic;
 import org.springframework.context.annotation.Bean;
@@ -7,8 +7,8 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class KafkaConfiguration {
 
-    @Bean(name = "newTopic")
+    @Bean
     public NewTopic newTopic(){
-        return new NewTopic("new_orders",1,(short)1);
+        return new NewTopic("feetBack",1,(short)1);
     }
 }

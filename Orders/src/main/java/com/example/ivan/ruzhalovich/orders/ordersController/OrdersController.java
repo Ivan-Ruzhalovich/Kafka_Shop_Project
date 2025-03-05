@@ -5,10 +5,9 @@ import com.example.ivan.ruzhalovich.orders.orderService.OrderServiceImpl;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/orders")
@@ -23,4 +22,16 @@ public class OrdersController {
         return new ResponseEntity<>("Its OK", HttpStatus.OK);
     }
 
+//**********************************FOR TEST**************************************************
+    @PostMapping("/simple")
+    public ResponseEntity<String> createSimpleNewOrder(@RequestBody Order order){
+        orderService.createSimpleOrder(order);
+        return new ResponseEntity<>("Its OK", HttpStatus.OK);
+    }
+
+    @GetMapping("/orders")
+    public ResponseEntity<List<Order>> getAllOrders(){
+        return new ResponseEntity<>(orderService.getOrders(),HttpStatus.OK);
+    }
+//**********************************FOR TEST**************************************************
 }

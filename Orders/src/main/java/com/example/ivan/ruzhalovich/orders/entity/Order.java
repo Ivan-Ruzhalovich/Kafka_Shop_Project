@@ -8,7 +8,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
+
 
 @Entity
 @AllArgsConstructor
@@ -25,8 +26,11 @@ public class Order {
 
     private OrderStatus status;
 
-    private LocalDateTime dateTime;
+    private LocalDate date;
 
     private BigDecimal amount;
 
+    public void updateStatus(OrderStatus status){
+        this.status = status;
+    }
 }

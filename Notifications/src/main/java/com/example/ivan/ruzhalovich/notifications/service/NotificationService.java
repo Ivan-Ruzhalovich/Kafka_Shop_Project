@@ -7,7 +7,6 @@ import org.springframework.stereotype.Service;
 @Service
 public class NotificationService {
 
-
     public ResponseEntity<String> sendNotification(String message){
         return new ResponseEntity<>(message, HttpStatus.OK);
     }

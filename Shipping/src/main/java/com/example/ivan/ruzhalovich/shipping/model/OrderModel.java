@@ -1,26 +1,33 @@
 package com.example.ivan.ruzhalovich.shipping.model;
 
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
-import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 
-@NoArgsConstructor
+@Entity
 @AllArgsConstructor
+@NoArgsConstructor
 @Getter
-@Data
+@Table(name = "orders")
 public class OrderModel {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private Long costumerId;
 
-    private String status;
+    private OrderStatus status;
+
+    private LocalDate date;
 
     private BigDecimal amount;
 
-
-
+    public void updateStatus(OrderStatus status){
+        this.status = status;
+    }
 }

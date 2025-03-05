@@ -1,7 +1,7 @@
-package com.example.ivan.ruzhalovich.payment.kafka;
+package com.example.ivan.ruzhalovich.orders.kafka;
 
-import com.example.ivan.ruzhalovich.payment.model.OrderModel;
-import com.example.ivan.ruzhalovich.payment.service.PaymentService;
+import com.example.ivan.ruzhalovich.orders.models.NotificationModel;
+import com.example.ivan.ruzhalovich.orders.orderService.OrderService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
@@ -13,24 +13,21 @@ import org.springframework.stereotype.Service;
 
 @Service
 @AllArgsConstructor
-public class PaymentConsumer {
+public class NotificationsConsumer {
 
     private final ObjectMapper objectMapper;
-    private final PaymentService paymentService;
-    private final PaymentProducer paymentProducer;
-    private final Logger log = LoggerFactory.getLogger(PaymentConsumer.class);
-    private final String topic = "new_orders";
+    private final OrderService orderService;
+    private final Logger log = LoggerFactory.getLogger(NotificationsConsumer.class);
+    private final String topic = "feetBack";
 
     @KafkaListener(topics = topic,groupId = "create_new_order")
     public void listenerOrdersForPayment(ConsumerRecord<String,String> message){
         try {
-            OrderModel orderModel = objectMapper.readValue(message.value(), OrderModel.class);
+            Long id = objectMapper.readValue(message.value(), NotificationModel.class).getId();
             log.info("Message:{}was received",message.value());
-            paymentService.payment(orderModel);
-            paymentProducer.sendOrder(orderModel);
+            orderService.updateStatus(id);
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
     }
-
 }

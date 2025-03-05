@@ -2,12 +2,21 @@ package com.example.ivan.ruzhalovich.orders.orderService;
 
 import com.example.ivan.ruzhalovich.orders.entity.Order;
 import com.example.ivan.ruzhalovich.orders.models.OrderModel;
+import com.example.ivan.ruzhalovich.orders.models.OrderStatus;
 import com.example.ivan.ruzhalovich.orders.repository.OrderRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
+import org.apache.kafka.clients.admin.NewTopic;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
+
+import java.util.List;
+import java.util.Optional;
 
 @Service
 @AllArgsConstructor
@@ -16,15 +25,43 @@ public class OrderServiceImpl implements OrderService{
     private final OrderRepository repository;
     private final KafkaTemplate<String,String> kafkaTemplate;
     private final ObjectMapper objectMapper;
+    private static final Logger log = LoggerFactory.getLogger(OrderServiceImpl.class);
+    private final NewTopic topic;
 
     @Override
     public void letsDoIt(Order order) {
         try {
-            String message = objectMapper.writeValueAsString(OrderModel.createOrderModelFromOrder(order));
+            order.updateStatus(OrderStatus.AWAITING_PAYMENT);
             repository.save(order);
-            kafkaTemplate.send("new_orders",message);
+            String message = objectMapper.writeValueAsString(order);
+            kafkaTemplate.send(topic.name(),message).whenComplete((result,exception) ->
+            {
+                if (exception==null)
+                    log.info("Message id:{} was sent, offset",order.getId(),result.getRecordMetadata().offset());
+                else log.error("Message id:{} was not sent",order.getId(),exception.getMessage());
+
+            });
         } catch (JsonProcessingException e) {
             throw new RuntimeException("Ошибка сериализации model в String");
+        } catch (Exception e){
+            log.error("Exception!");
         }
+    }
+
+    @Override
+    public void updateStatus(Long id) {
+        Order order = repository
+                .findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,"Такого заказа не существует!"));
+        order.updateStatus(OrderStatus.DELIVERED);
+        repository.save(order);
+    }
+
+    public void createSimpleOrder(Order order){
+        repository.save(order);
+    }
+
+    public List<Order> getOrders(){
+        return repository.findAll();
     }
 }
