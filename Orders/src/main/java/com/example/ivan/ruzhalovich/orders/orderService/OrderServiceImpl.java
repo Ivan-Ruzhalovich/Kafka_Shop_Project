@@ -1,7 +1,7 @@
 package com.example.ivan.ruzhalovich.orders.orderService;
 
 import com.example.ivan.ruzhalovich.orders.entity.Order;
-import com.example.ivan.ruzhalovich.orders.models.OrderModel;
+import com.example.ivan.ruzhalovich.orders.models.NotificationModel;
 import com.example.ivan.ruzhalovich.orders.models.OrderStatus;
 import com.example.ivan.ruzhalovich.orders.repository.OrderRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -16,7 +16,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @AllArgsConstructor
@@ -49,15 +48,12 @@ public class OrderServiceImpl implements OrderService{
     }
 
     @Override
-    public void updateStatus(Long id) {
+    public void updateStatus(NotificationModel notification) {
         Order order = repository
-                .findById(id)
+                .findById(notification.getId())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,"Такого заказа не существует!"));
-        order.updateStatus(OrderStatus.DELIVERED);
-        repository.save(order);
-    }
-
-    public void createSimpleOrder(Order order){
+        order.setStatus(notification.getStatus());
+        log.info("Обновляем статус заказа №{}, новый статус - {}",order.getId(),order.getStatus());
         repository.save(order);
     }
 

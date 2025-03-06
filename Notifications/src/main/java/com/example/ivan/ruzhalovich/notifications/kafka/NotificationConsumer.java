@@ -1,7 +1,7 @@
 package com.example.ivan.ruzhalovich.notifications.kafka;
 
 import com.example.ivan.ruzhalovich.notifications.model.NotificationModel;
-import com.example.ivan.ruzhalovich.notifications.service.NotificationService;
+import com.example.ivan.ruzhalovich.notifications.model.OrderStatus;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
@@ -16,16 +16,15 @@ import org.springframework.stereotype.Service;
 public class NotificationConsumer {
 
     private final ObjectMapper objectMapper;
-    private final NotificationService notificationService;
     private final String topic = "sent_orders";
     private static final Logger log = LoggerFactory.getLogger(NotificationConsumer.class);
     private final NotificationProducer producer;
 
-    @KafkaListener(topics = topic, groupId = "notifications_group")
+    @KafkaListener(topics = topic, groupId = "notifications_group",concurrency = "10")
     public void newNotification(ConsumerRecord<String, String> notification) {
-//        notificationService.sendNotification(getMessage(notification.value()));
         try {
             NotificationModel model = objectMapper.readValue(notification.value(), NotificationModel.class);
+            model.updateStatus(OrderStatus.DELIVERED);
             producer.sendStatusToDataBase(model);
             log.info("Message id:{} was received", model.getId());
         } catch (JsonProcessingException e) {

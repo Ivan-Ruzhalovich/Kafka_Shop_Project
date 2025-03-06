@@ -1,5 +1,6 @@
 package com.example.ivan.ruzhalovich.payment.kafka;
 
+import com.example.ivan.ruzhalovich.payment.model.NotificationModel;
 import com.example.ivan.ruzhalovich.payment.model.OrderModel;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -18,6 +19,7 @@ public class PaymentProducer {
     private final ObjectMapper objectMapper;
     private final NewTopic topic;
     private static final Logger log = LoggerFactory.getLogger(PaymentConsumer.class);
+    private final String feetBackTopic = "feetBack";
 
     public void sendOrder(OrderModel model) {
         try {
@@ -27,6 +29,19 @@ public class PaymentProducer {
                 if(exception==null)
                     log.info("Message id:{} was sent to{}",model.getId(),result.getProducerRecord().topic());
                 else log.error("Message id:{} was not sent, exception:{}",model.getId(),exception.getMessage());
+                    });
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
+    }
+    public void sendNotification(NotificationModel model) {
+        try {
+            kafkaTemplate.send(feetBackTopic, objectMapper
+                            .writeValueAsString(model))
+                    .whenComplete((result, exception) -> {
+                        if(exception==null)
+                            log.info("Status result:{} was sent to {}",model.getStatus(),result.getProducerRecord().topic());
+                        else log.error("Status result:{} was not sent, exception:{}",model.getStatus(),exception.getMessage());
                     });
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);

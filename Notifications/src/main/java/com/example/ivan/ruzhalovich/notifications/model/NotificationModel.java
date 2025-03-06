@@ -5,10 +5,13 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
-@Setter
 @Data
 public class NotificationModel {
 
     private Long id;
+    private OrderStatus status;
 
+    public void updateStatus(OrderStatus status){
+        this.status = status;
+    }
 }

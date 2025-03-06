@@ -1,6 +1,6 @@
 package com.example.ivan.ruzhalovich.shipping.kafka;
 
-import com.example.ivan.ruzhalovich.shipping.model.OrderModelNotification;
+import com.example.ivan.ruzhalovich.shipping.model.NotificationModel;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
@@ -18,19 +18,28 @@ public class ShippingProducer {
     private final ObjectMapper objectMapper;
     private final NewTopic topic;
     private static final Logger log = LoggerFactory.getLogger(ShippingProducer.class);
+    private final String feetBackTopic = "feetBack";
 
-    public void sendNotification(OrderModelNotification orderModelNotification) {
+    public void sendNotification(NotificationModel notificationModel) {
         try {
-            kafkaTemplate.send(topic.name(), objectMapper
-                            .writeValueAsString(orderModelNotification))
+            String notificationString = objectMapper.writeValueAsString(notificationModel);
+            kafkaTemplate.send(topic.name(), notificationString)
                     .whenComplete((result, exception) -> {
                         if (exception == null)
-                            log.info("Message id:{} was sent to{}", orderModelNotification.getId(), result.getProducerRecord().topic());
+                            log.info("Message id:{} was sent to {}", notificationModel.getId(), result.getProducerRecord().topic());
                         else
-                            log.error("Message id:{} was not sent, exception:{}", orderModelNotification.getId(), exception.getMessage());
+                            log.error("Message id:{} was not sent, exception:{}", notificationModel.getId(), exception.getMessage());
+                    });
+            kafkaTemplate.send(feetBackTopic, notificationString)
+                    .whenComplete((result, exception) -> {
+                        if (exception == null)
+                            log.info("Order Status{} was sent to{}", notificationModel.getStatus(), result.getProducerRecord().topic());
+                        else
+                            log.error("Order Status{} was not sent, exception:{}", notificationModel.getStatus(), exception.getMessage());
                     });
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
     }
+
 }

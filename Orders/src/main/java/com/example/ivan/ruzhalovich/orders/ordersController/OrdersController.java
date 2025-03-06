@@ -22,16 +22,9 @@ public class OrdersController {
         return new ResponseEntity<>("Its OK", HttpStatus.OK);
     }
 
-//**********************************FOR TEST**************************************************
-    @PostMapping("/simple")
-    public ResponseEntity<String> createSimpleNewOrder(@RequestBody Order order){
-        orderService.createSimpleOrder(order);
-        return new ResponseEntity<>("Its OK", HttpStatus.OK);
-    }
-
     @GetMapping("/orders")
     public ResponseEntity<List<Order>> getAllOrders(){
         return new ResponseEntity<>(orderService.getOrders(),HttpStatus.OK);
     }
-//**********************************FOR TEST**************************************************
+
 }

@@ -15,14 +15,14 @@ public class OrderModel {
 
     private Long costumerId;
 
-    private String status;
+    private OrderStatus status;
 
     private BigDecimal amount;
 
     public static OrderModel createOrderModelFromOrder(Order order){
         return new OrderModel(order.getId(),
                 order.getCostumerId(),
-                order.getStatus().getOrderStatus(),
+                order.getStatus(),
                 order.getAmount());
     }
 }

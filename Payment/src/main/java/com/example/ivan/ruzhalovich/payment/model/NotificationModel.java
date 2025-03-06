@@ -1,4 +1,4 @@
-package com.example.ivan.ruzhalovich.orders.models;
+package com.example.ivan.ruzhalovich.payment.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

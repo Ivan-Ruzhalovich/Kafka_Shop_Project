@@ -1,4 +1,4 @@
-package com.example.ivan.ruzhalovich.orders.models;
+package com.example.ivan.ruzhalovich.notifications.model;
 
 public enum OrderStatus {
     NEW("Новый заказ"),
@@ -7,7 +7,6 @@ public enum OrderStatus {
     PACKAGE("Заказ упакован и передан в доставку"),
     DELIVERED("Заказ доставлен клиенту"),
     CANCELLED("Заказ отменен по техническим причинам!");
-
 
     private final String status;
 

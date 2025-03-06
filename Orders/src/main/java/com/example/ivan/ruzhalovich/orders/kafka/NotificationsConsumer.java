@@ -20,12 +20,12 @@ public class NotificationsConsumer {
     private final Logger log = LoggerFactory.getLogger(NotificationsConsumer.class);
     private final String topic = "feetBack";
 
-    @KafkaListener(topics = topic,groupId = "create_new_order")
+    @KafkaListener(topics = topic,groupId = "create_new_order",concurrency = "10")
     public void listenerOrdersForPayment(ConsumerRecord<String,String> message){
         try {
-            Long id = objectMapper.readValue(message.value(), NotificationModel.class).getId();
+            NotificationModel notification = objectMapper.readValue(message.value(), NotificationModel.class);
             log.info("Message:{}was received",message.value());
-            orderService.updateStatus(id);
+            orderService.updateStatus(notification);
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }

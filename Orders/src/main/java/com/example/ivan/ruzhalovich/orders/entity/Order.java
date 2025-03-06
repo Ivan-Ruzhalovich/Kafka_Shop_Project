@@ -6,15 +6,17 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
+@Setter
 @Table(name = "orders")
 public class Order {
 
@@ -26,7 +28,7 @@ public class Order {
 
     private OrderStatus status;
 
-    private LocalDate date;
+    private LocalDateTime date = LocalDateTime.now();
 
     private BigDecimal amount;
 

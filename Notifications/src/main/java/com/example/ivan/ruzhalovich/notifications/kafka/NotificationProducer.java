@@ -25,8 +25,8 @@ public class NotificationProducer {
                             .writeValueAsString(model))
                     .whenComplete((result, exception) -> {
                         if(exception==null)
-                            log.info("Message id:{} was sent to{}",model.getId(),result.getProducerRecord().topic());
-                        else log.error("Message id:{} was not sent, exception:{}",model.getId(),exception.getMessage());
+                            log.info("Order status:{} was sent to {}",model.getStatus(),result.getProducerRecord().topic());
+                        else log.error("Order status:{} was not sent, exception:{}",model.getStatus(),exception.getMessage());
                     });
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);

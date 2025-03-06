@@ -1,6 +1,5 @@
 package com.example.ivan.ruzhalovich.payment.model;
 
-import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -8,15 +7,10 @@ import lombok.NoArgsConstructor;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
-@Entity
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
-@Table(name = "orders")
 public class OrderModel {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private Long costumerId;
