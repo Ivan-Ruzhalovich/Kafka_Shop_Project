@@ -9,6 +9,8 @@ import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.kafka.annotation.KafkaListener;
+import org.springframework.retry.annotation.Backoff;
+import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -20,6 +22,7 @@ public class NotificationConsumer {
     private static final Logger log = LoggerFactory.getLogger(NotificationConsumer.class);
     private final NotificationProducer producer;
 
+    @Retryable(retryFor = {Exception.class}, maxAttempts = 5,backoff = @Backoff(delay = 1000))
     @KafkaListener(topics = topic, groupId = "notifications_group",concurrency = "10")
     public void newNotification(ConsumerRecord<String, String> notification) {
         try {

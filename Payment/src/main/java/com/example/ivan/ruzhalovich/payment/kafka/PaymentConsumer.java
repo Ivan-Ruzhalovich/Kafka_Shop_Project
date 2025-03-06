@@ -10,6 +10,8 @@ import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.kafka.annotation.KafkaListener;
+import org.springframework.retry.annotation.Backoff;
+import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -22,6 +24,7 @@ public class PaymentConsumer {
     private final Logger log = LoggerFactory.getLogger(PaymentConsumer.class);
     private final String topic = "new_orders";
 
+    @Retryable(retryFor = {Exception.class}, maxAttempts = 5,backoff = @Backoff(delay = 1000))
     @KafkaListener(topics = topic,groupId = "create_new_order",concurrency = "10")
     public void listenerOrdersForPayment(ConsumerRecord<String,String> message){
         try {

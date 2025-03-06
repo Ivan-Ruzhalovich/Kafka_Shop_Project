@@ -33,9 +33,9 @@ public class ShippingProducer {
             kafkaTemplate.send(feetBackTopic, notificationString)
                     .whenComplete((result, exception) -> {
                         if (exception == null)
-                            log.info("Order Status{} was sent to{}", notificationModel.getStatus(), result.getProducerRecord().topic());
+                            log.info("Order Status {} was sent to {}", notificationModel.getStatus(), result.getProducerRecord().topic());
                         else
-                            log.error("Order Status{} was not sent, exception:{}", notificationModel.getStatus(), exception.getMessage());
+                            log.error("Order Status {} was not sent, exception:{}", notificationModel.getStatus(), exception.getMessage());
                     });
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);

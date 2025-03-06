@@ -10,6 +10,8 @@ import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.kafka.annotation.KafkaListener;
+import org.springframework.retry.annotation.Backoff;
+import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -20,8 +22,9 @@ public class ShippingConsumer {
     private final ShippingProducer shippingProducer;
     private final String topic = "payed_orders";
     private static final Logger log = LoggerFactory.getLogger(ShippingConsumer.class);
-    PackagingService packagingService;
+    private final PackagingService packagingService;
 
+    @Retryable(retryFor = {Exception.class}, maxAttempts = 5,backoff = @Backoff(delay = 1000))
     @KafkaListener(topics = topic,groupId = "shipping_group",concurrency = "10")
     public void listenerOrdersForShipping(ConsumerRecord<String,String> order){
         try {

@@ -40,8 +40,8 @@ public class PaymentProducer {
                             .writeValueAsString(model))
                     .whenComplete((result, exception) -> {
                         if(exception==null)
-                            log.info("Status result:{} was sent to {}",model.getStatus(),result.getProducerRecord().topic());
-                        else log.error("Status result:{} was not sent, exception:{}",model.getStatus(),exception.getMessage());
+                            log.info("Order status :{} was sent to {}",model.getStatus(),result.getProducerRecord().topic());
+                        else log.error("Order status :{} was not sent, exception:{}",model.getStatus(),exception.getMessage());
                     });
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
