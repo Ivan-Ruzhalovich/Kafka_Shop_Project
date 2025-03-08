@@ -18,8 +18,6 @@ public class OrderModel {
 
     private OrderStatus status;
 
-    private LocalDate date;
-
     private BigDecimal amount;
 
     public void updateStatus(OrderStatus status){

@@ -18,6 +18,7 @@ public class NotificationProducer {
     private final ObjectMapper objectMapper;
     private static final Logger log = LoggerFactory.getLogger(NotificationProducer.class);
     private final NewTopic topic;
+    private final String logsTopic = "Logs";
 
     public void sendStatusToDataBase(NotificationModel model){
         try {
@@ -28,6 +29,8 @@ public class NotificationProducer {
                             log.info("Order status:{} was sent to {}",model.getStatus(),result.getProducerRecord().topic());
                         else log.error("Order status:{} was not sent, exception:{}",model.getStatus(),exception.getMessage());
                     });
+            String logs = "Notificaton Producer: Order status: " + model.getStatus() +" -> ";
+            kafkaTemplate.send(logsTopic,3,"NotificationKey",objectMapper.writeValueAsString(logs));
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }

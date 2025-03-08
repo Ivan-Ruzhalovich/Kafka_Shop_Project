@@ -9,6 +9,7 @@ import lombok.AllArgsConstructor;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.core.annotation.Order;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.retry.annotation.Backoff;
 import org.springframework.retry.annotation.Retryable;
@@ -26,14 +27,10 @@ public class ShippingConsumer {
 
     @Retryable(retryFor = {Exception.class}, maxAttempts = 5,backoff = @Backoff(delay = 1000))
     @KafkaListener(topics = topic,groupId = "shipping_group",concurrency = "10")
-    public void listenerOrdersForShipping(ConsumerRecord<String,String> order){
-        try {
-            OrderModel orderModel = objectMapper.readValue(order.value(),OrderModel.class);
+    public void listenerOrdersForShipping(ConsumerRecord<String, String> order) throws JsonProcessingException {
+            OrderModel orderModel = objectMapper.readValue(order.value(), OrderModel.class);
             log.info("Message:{}was received",order.value());
             packagingService.packaging(orderModel);
             shippingProducer.sendNotification(NotificationModel.createFromOrder(orderModel));
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
-        }
     }
 }

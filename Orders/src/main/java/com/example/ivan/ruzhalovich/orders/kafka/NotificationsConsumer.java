@@ -21,17 +21,13 @@ public class NotificationsConsumer {
     private final ObjectMapper objectMapper;
     private final OrderService orderService;
     private final Logger log = LoggerFactory.getLogger(NotificationsConsumer.class);
-    private final String topic = "feetBack";
+    private final String topic = "feedBack";
 
     @Retryable(retryFor = {Exception.class}, maxAttempts = 5,backoff = @Backoff(delay = 1000))
     @KafkaListener(topics = topic,groupId = "create_new_order",concurrency = "10")
-    public void listenerOrdersForPayment(ConsumerRecord<String,String> message){
-        try {
+    public void listenerOrdersForPayment(ConsumerRecord<String,String> message) throws JsonProcessingException {
             NotificationModel notification = objectMapper.readValue(message.value(), NotificationModel.class);
-            log.info("Message:{}was received",message.value());
+            log.info("Message:{}was received",notification);
             orderService.updateStatus(notification);
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
-        }
     }
 }

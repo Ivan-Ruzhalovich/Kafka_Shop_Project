@@ -19,7 +19,8 @@ public class PaymentProducer {
     private final ObjectMapper objectMapper;
     private final NewTopic topic;
     private static final Logger log = LoggerFactory.getLogger(PaymentConsumer.class);
-    private final String feetBackTopic = "feetBack";
+    private final String feedBackTopic = "feedBack";
+    private final String logsTopic = "Logs";
 
     public void sendOrder(OrderModel model) {
         try {
@@ -36,13 +37,15 @@ public class PaymentProducer {
     }
     public void sendNotification(NotificationModel model) {
         try {
-            kafkaTemplate.send(feetBackTopic, objectMapper
+            kafkaTemplate.send(feedBackTopic, objectMapper
                             .writeValueAsString(model))
                     .whenComplete((result, exception) -> {
                         if(exception==null)
                             log.info("Order status :{} was sent to {}",model.getStatus(),result.getProducerRecord().topic());
                         else log.error("Order status :{} was not sent, exception:{}",model.getStatus(),exception.getMessage());
                     });
+            String logs = "Payment Producer: Order status: " + model.getStatus() +" -> ";
+            kafkaTemplate.send(logsTopic,1,"PaymentKey",objectMapper.writeValueAsString(logs));
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }

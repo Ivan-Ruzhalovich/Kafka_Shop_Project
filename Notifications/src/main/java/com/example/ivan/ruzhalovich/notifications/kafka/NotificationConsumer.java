@@ -24,15 +24,11 @@ public class NotificationConsumer {
 
     @Retryable(retryFor = {Exception.class}, maxAttempts = 5,backoff = @Backoff(delay = 1000))
     @KafkaListener(topics = topic, groupId = "notifications_group",concurrency = "10")
-    public void newNotification(ConsumerRecord<String, String> notification) {
-        try {
+    public void newNotification(ConsumerRecord<String, String> notification) throws JsonProcessingException {
             NotificationModel model = objectMapper.readValue(notification.value(), NotificationModel.class);
             model.updateStatus(OrderStatus.DELIVERED);
             producer.sendStatusToDataBase(model);
             log.info("Message id:{} was received", model.getId());
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
-        }
     }
 }
 

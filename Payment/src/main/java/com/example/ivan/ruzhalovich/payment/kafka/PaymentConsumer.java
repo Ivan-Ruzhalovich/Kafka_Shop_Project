@@ -26,16 +26,11 @@ public class PaymentConsumer {
 
     @Retryable(retryFor = {Exception.class}, maxAttempts = 5,backoff = @Backoff(delay = 1000))
     @KafkaListener(topics = topic,groupId = "create_new_order",concurrency = "10")
-    public void listenerOrdersForPayment(ConsumerRecord<String,String> message){
-        try {
-            OrderModel orderModel = objectMapper.readValue(message.value(), OrderModel.class);
+    public void listenerOrdersForPayment(ConsumerRecord<String,String> message) throws JsonProcessingException {
+            OrderModel orderModel = objectMapper.readValue(message.value(),OrderModel.class);
             log.info("Message:{}was received",message.value());
             paymentService.payment(orderModel);
             paymentProducer.sendOrder(orderModel);
             paymentProducer.sendNotification(NotificationModel.createFromOrder(orderModel));
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
-        }
     }
-
 }

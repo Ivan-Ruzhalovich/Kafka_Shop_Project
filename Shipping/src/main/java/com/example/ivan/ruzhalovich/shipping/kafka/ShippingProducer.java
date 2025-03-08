@@ -18,7 +18,8 @@ public class ShippingProducer {
     private final ObjectMapper objectMapper;
     private final NewTopic topic;
     private static final Logger log = LoggerFactory.getLogger(ShippingProducer.class);
-    private final String feetBackTopic = "feetBack";
+    private final String feedBackTopic = "feedBack";
+    private final String logsTopic = "Logs";
 
     public void sendNotification(NotificationModel notificationModel) {
         try {
@@ -30,13 +31,15 @@ public class ShippingProducer {
                         else
                             log.error("Message id:{} was not sent, exception:{}", notificationModel.getId(), exception.getMessage());
                     });
-            kafkaTemplate.send(feetBackTopic, notificationString)
+            kafkaTemplate.send(feedBackTopic, notificationString)
                     .whenComplete((result, exception) -> {
                         if (exception == null)
                             log.info("Order Status {} was sent to {}", notificationModel.getStatus(), result.getProducerRecord().topic());
                         else
                             log.error("Order Status {} was not sent, exception:{}", notificationModel.getStatus(), exception.getMessage());
                     });
+            String logs = "Shipping Producer: Order status: " + notificationModel.getStatus() +" -> ";
+            kafkaTemplate.send(logsTopic,2,"ShippingKey",objectMapper.writeValueAsString(logs));
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }

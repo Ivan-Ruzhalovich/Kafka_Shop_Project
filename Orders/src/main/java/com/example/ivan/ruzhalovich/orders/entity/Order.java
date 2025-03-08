@@ -1,6 +1,7 @@
 package com.example.ivan.ruzhalovich.orders.entity;
 
 
+import com.example.ivan.ruzhalovich.orders.models.OrderModel;
 import com.example.ivan.ruzhalovich.orders.models.OrderStatus;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -34,5 +35,12 @@ public class Order {
 
     public void updateStatus(OrderStatus status){
         this.status = status;
+    }
+
+    public OrderModel createOrderModelFromOrder(){
+        return new OrderModel(this.getId(),
+                this.getCostumerId(),
+                this.getStatus(),
+                this.getAmount());
     }
 }

@@ -1,16 +1,15 @@
 package com.example.ivan.ruzhalovich.orders.models;
 
-import com.example.ivan.ruzhalovich.orders.entity.Order;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
-@NoArgsConstructor
+
 @AllArgsConstructor
+@NoArgsConstructor
 @Getter
 public class OrderModel {
-
     private Long id;
 
     private Long costumerId;
@@ -19,10 +18,7 @@ public class OrderModel {
 
     private BigDecimal amount;
 
-    public static OrderModel createOrderModelFromOrder(Order order){
-        return new OrderModel(order.getId(),
-                order.getCostumerId(),
-                order.getStatus(),
-                order.getAmount());
+    public void updateStatus(OrderStatus status){
+        this.status = status;
     }
 }
